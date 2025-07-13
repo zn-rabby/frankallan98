@@ -1,0 +1,20 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 1
+    },
+    "auditLog": "C:\\Users\\Zulkar Naeem Rabby\\Desktop\\rabby\\frankallan98\\winston\\error\\.db22a4f954b9c958f0e523e02e280c90d771d55d-audit.json",
+    "files": [
+        {
+            "date": 1752395176344,
+            "name": "C:\\Users\\Zulkar Naeem Rabby\\Desktop\\rabby\\frankallan98\\winston\\error\\13-07-2025-14-error.log",
+            "hash": "a4f89ae953562b54ceaa977b6f4a99d75c1fa9a3987a3b851610eb6f87faaf9e"
+        },
+        {
+            "date": 1752398112786,
+            "name": "C:\\Users\\Zulkar Naeem Rabby\\Desktop\\rabby\\frankallan98\\winston\\error\\13-07-2025-15-error.log",
+            "hash": "8b3bce367154fd5268e179cd26d18406010befd6cf506ea3173f552872616e32"
+        }
+    ],
+    "hashType": "sha256"
+}

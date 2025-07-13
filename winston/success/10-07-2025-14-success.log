@@ -1,0 +1,10 @@
+Thu Jul 10 2025 14:27:27 [SERVER-NAME] info: [32mConfig validation successful.[39m
+Thu Jul 10 2025 14:27:27 [SERVER-NAME] info: [46m🚀 Database connected successfully[49m
+Thu Jul 10 2025 14:27:27 [SERVER-NAME] info: [33m♻️  Socket is listening on same port 5001[39m
+Thu Jul 10 2025 14:27:27 [SERVER-NAME] info: [46m♻️  Application listening on http://10.10.7.109:5001[49m
+Thu Jul 10 2025 14:28:43 [SERVER-NAME] info: 10.10.7.109 - GET / 200 - 5.066 ms
+Thu Jul 10 2025 14:29:46 [SERVER-NAME] info: [34mSIGINT received. Shutting down gracefully...[39m
+Thu Jul 10 2025 14:29:55 [SERVER-NAME] info: [32mConfig validation successful.[39m
+Thu Jul 10 2025 14:29:56 [SERVER-NAME] info: [46m🚀 Database connected successfully[49m
+Thu Jul 10 2025 14:29:56 [SERVER-NAME] info: [33m♻️  Socket is listening on same port 5001[39m
+Thu Jul 10 2025 14:29:56 [SERVER-NAME] info: [46m♻️  Application listening on http://10.10.7.109:5001[49m

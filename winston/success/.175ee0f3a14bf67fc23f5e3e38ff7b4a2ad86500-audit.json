@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 1
+    },
+    "auditLog": "C:\\Users\\Zulkar Naeem Rabby\\Desktop\\rabby\\backend-template-latest\\winston\\success\\.175ee0f3a14bf67fc23f5e3e38ff7b4a2ad86500-audit.json",
+    "files": [
+        {
+            "date": 1752136046249,
+            "name": "C:\\Users\\Zulkar Naeem Rabby\\Desktop\\rabby\\backend-template-latest\\winston\\success\\10-07-2025-14-success.log",
+            "hash": "461bbdff5cf96a55576981630e69494b63931b0b9832696932c8c7090d8f9e1c"
+        }
+    ],
+    "hashType": "sha256"
+}
