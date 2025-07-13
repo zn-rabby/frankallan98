@@ -19,10 +19,12 @@ A comprehensive Node.js API template with professional OAuth authentication impl
 ## OAuth Implementation
 
 ### Supported Providers
+
 - **Google OAuth 2.0**: Full Google login integration
 - **Facebook OAuth**: Facebook login integration
 
 ### OAuth Flow
+
 1. User clicks OAuth login button
 2. Redirected to provider (Google/Facebook)
 3. User authenticates with provider
@@ -31,6 +33,7 @@ A comprehensive Node.js API template with professional OAuth authentication impl
 6. User is redirected to frontend with tokens
 
 ### OAuth Routes
+
 ```
 GET /api/v1/auth/google          - Initiate Google OAuth
 GET /api/v1/auth/google/callback - Google OAuth callback
@@ -94,8 +97,8 @@ RESET_TOKEN_EXPIRE_TIME=10m
 4. Go to Credentials → Create Credentials → OAuth 2.0 Client ID
 5. Set Application Type to "Web application"
 6. Add authorized redirect URIs:
-   - `http://localhost:5000/api/v1/auth/google/callback` (development)
-   - `https://yourdomain.com/api/v1/auth/google/callback` (production)
+     - `http://localhost:5000/api/v1/auth/google/callback` (development)
+     - `https://yourdomain.com/api/v1/auth/google/callback` (production)
 7. Copy Client ID and Client Secret to your `.env` file
 
 ### Facebook OAuth Setup
@@ -104,7 +107,7 @@ RESET_TOKEN_EXPIRE_TIME=10m
 2. Create a new app
 3. Add Facebook Login product
 4. Configure OAuth settings:
-   - Valid OAuth Redirect URIs: `http://localhost:5000/api/v1/auth/facebook/callback`
+     - Valid OAuth Redirect URIs: `http://localhost:5000/api/v1/auth/facebook/callback`
 5. Copy App ID and App Secret to your `.env` file
 
 ## Installation
@@ -126,6 +129,7 @@ npm start
 ## API Endpoints
 
 ### Authentication
+
 ```
 POST /api/v1/auth/login              - User login
 POST /api/v1/auth/verify-email       - Verify email with OTP
@@ -137,6 +141,7 @@ POST /api/v1/auth/resend-otp         - Resend OTP
 ```
 
 ### OAuth Authentication
+
 ```
 GET /api/v1/auth/google              - Google OAuth login
 GET /api/v1/auth/google/callback     - Google OAuth callback
@@ -145,6 +150,7 @@ GET /api/v1/auth/facebook/callback   - Facebook OAuth callback
 ```
 
 ### User Management
+
 ```
 GET /api/v1/users/profile            - Get user profile
 PATCH /api/v1/users/profile          - Update user profile
@@ -155,32 +161,33 @@ POST /api/v1/users                   - Create new user
 
 ```typescript
 interface IUser {
-  name: string;
-  role: USER_ROLES;
-  email: string;
-  password?: string; // Optional for OAuth users
-  image?: string;
-  status: 'active' | 'blocked';
-  verified: boolean;
-  isDeleted: boolean;
-  stripeCustomerId: string;
-  
-  // OAuth fields
-  googleId?: string;
-  facebookId?: string;
-  oauthProvider?: 'google' | 'facebook';
-  
-  authentication?: {
-    isResetPassword: boolean;
-    oneTimeCode: number;
-    expireAt: Date;
-  };
+     name: string;
+     role: USER_ROLES;
+     email: string;
+     password?: string; // Optional for OAuth users
+     image?: string;
+     status: 'active' | 'blocked';
+     verified: boolean;
+     isDeleted: boolean;
+     stripeCustomerId: string;
+
+     // OAuth fields
+     googleId?: string;
+     facebookId?: string;
+     oauthProvider?: 'google' | 'facebook';
+
+     authentication?: {
+          isResetPassword: boolean;
+          oneTimeCode: number;
+          expireAt: Date;
+     };
 }
 ```
 
 ## OAuth User Flow
 
 ### New OAuth User
+
 1. User clicks "Login with Google/Facebook"
 2. OAuth provider authenticates user
 3. System checks if user exists by OAuth ID
@@ -191,12 +198,14 @@ interface IUser {
 8. JWT tokens are generated and returned
 
 ### Existing OAuth User
+
 1. User clicks "Login with Google/Facebook"
 2. OAuth provider authenticates user
 3. System finds user by OAuth ID
 4. User is logged in with JWT tokens
 
 ### Mixed Authentication
+
 - Users can link multiple OAuth providers to same email
 - System prevents duplicate accounts
 - OAuth users are auto-verified
@@ -478,3 +487,6 @@ npx ts-node-dev --transpile-only src/server.ts
   "lint:fix": "eslint src/**/*.ts --fix",                           # Fixes code style issues automatically
   "format": "prettier . --write"                                    # Formats code consistently with Prettier
 }
+```
+
+## Zulkar Naeem Rabby
