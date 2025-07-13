@@ -1,9 +1,9 @@
 import httpStatus from 'http-status';
 import { Chat } from '../chat/chat.model';
 import { IMessage } from './message.interface';
-import { Message } from './message.model';
-import AppError from '../../error/AppError';
+import { Message } from './message.model'; 
 import { Types } from 'mongoose';
+import AppError from '../../../errors/AppError';
 
 // Enhanced version with better error handling and logging
 const sendMessageToDB = async (payload: IMessage): Promise<IMessage> => {
