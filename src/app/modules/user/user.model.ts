@@ -5,6 +5,16 @@ import config from '../../../config';
 import { USER_ROLES } from '../../../enums/user';
 import AppError from '../../../errors/AppError';
 import { IUser, UserModel } from './user.interface';
+import mongoose from 'mongoose';
+// Review Schema embedded inside the Product Schema
+const reviewSchema = new Schema({
+     userId: { type: mongoose.Schema.ObjectId, ref: 'User', required: true },
+     productId: { type: mongoose.Schema.ObjectId, ref: 'Product', required: true },
+     rating: { type: Number, required: true, min: 1, max: 5 },
+     comment: { type: String, required: true },
+     images: { type: [String], default: [] },
+     date: { type: Date, default: Date.now },
+});
 
 const userSchema = new Schema<IUser, UserModel>(
      {
@@ -17,20 +27,23 @@ const userSchema = new Schema<IUser, UserModel>(
                enum: Object.values(USER_ROLES),
                default: USER_ROLES.USER,
           },
+          contactNumber: { type: String, required: false, default: '', unique: true },
           email: {
                type: String,
-               required: true,
+               required: false,
                unique: true,
+               default: '',
                lowercase: true,
           },
           password: {
                type: String,
-               required: function() {
-                    // Password is only required for non-OAuth users
-                    return !this.oauthProvider;
-               },
+               required: true,
                select: false,
                minlength: 8,
+          },
+          location: {
+               type: String,
+               default: '',
           },
           image: {
                type: String,
@@ -38,33 +51,18 @@ const userSchema = new Schema<IUser, UserModel>(
           },
           status: {
                type: String,
-               enum: ['active', 'blocked'],
+               enum: ['active', 'banned'],
                default: 'active',
           },
           verified: {
                type: Boolean,
                default: false,
           },
+
+          reviews: { type: [reviewSchema], default: [] },
           isDeleted: {
                type: Boolean,
                default: false,
-          },
-          stripeCustomerId: {
-               type: String,
-               default: '',
-          },
-          // OAuth fields
-          googleId: {
-               type: String,
-               sparse: true,
-          },
-          facebookId: {
-               type: String,
-               sparse: true,
-          },
-          oauthProvider: {
-               type: String,
-               enum: ['google', 'facebook'],
           },
           authentication: {
                type: {
@@ -73,7 +71,7 @@ const userSchema = new Schema<IUser, UserModel>(
                          default: false,
                     },
                     oneTimeCode: {
-                         type: Number,
+                         type: String,
                          default: null,
                     },
                     expireAt: {
@@ -92,14 +90,13 @@ userSchema.statics.isExistUserById = async (id: string) => {
      return await User.findById(id);
 };
 
-// db.users.updateOne({email:"tihow91361@linxues.com"},{email:"rakibhassan305@gmail.com"})
-
 userSchema.statics.isExistUserByEmail = async (email: string) => {
      return await User.findOne({ email });
 };
-userSchema.statics.isExistUserByPhone = async (contact: string) => {
-     return await User.findOne({ contact });
+userSchema.statics.isExistUserByPhone = async (contactNumber: string) => {
+     return await User.findOne({ contactNumber });
 };
+
 // Password Matching
 userSchema.statics.isMatchPassword = async (password: string, hashPassword: string): Promise<boolean> => {
      return await bcrypt.compare(password, hashPassword);
@@ -107,24 +104,12 @@ userSchema.statics.isMatchPassword = async (password: string, hashPassword: stri
 
 // Pre-Save Hook for Hashing Password & Checking Email Uniqueness
 userSchema.pre('save', async function (next) {
-     // Only check email uniqueness if this is a new user or email is being changed
-     if (this.isNew || this.isModified('email')) {
-          const existingUser = await User.findOne({ email: this.get('email') });
-          if (existingUser && existingUser._id.toString() !== this._id.toString()) {
-               throw new AppError(StatusCodes.BAD_REQUEST, 'Email already exists!');
-          }
+     const isExist = await User.findOne({ email: this.get('email') });
+     if (isExist) {
+          throw new AppError(StatusCodes.BAD_REQUEST, 'Email already exists!');
      }
 
-     // Only hash password if it's provided and modified
-     if (this.password && this.isModified('password')) {
-          this.password = await bcrypt.hash(this.password, Number(config.bcrypt_salt_rounds));
-     }
-
-     // Auto-verify OAuth users
-     if (this.oauthProvider && !this.verified) {
-          this.verified = true;
-     }
-
+     this.password = await bcrypt.hash(this.password, Number(config.bcrypt_salt_rounds));
      next();
 });
 

@@ -1,18 +1,26 @@
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { USER_ROLES } from '../../../enums/user';
+export interface IReview {
+     userId: Types.ObjectId;
+     rating: number;
+     comment: string;
+     date: Date;
+}
 export type IUser = {
+     _id: any;
+     id: any;
      name: string;
      role: USER_ROLES;
+     contactNumber: string;
+     location: string;
      email: string;
-     password?: string;
+     password: string;
      image?: string;
      isDeleted: boolean;
-     stripeCustomerId: string;
+     address: string;
      status: 'active' | 'blocked';
      verified: boolean;
-     googleId?: string;
-     facebookId?: string;
-     oauthProvider?: 'google' | 'facebook';
+     reviews: IReview[];
      authentication?: {
           isResetPassword: boolean;
           oneTimeCode: number;

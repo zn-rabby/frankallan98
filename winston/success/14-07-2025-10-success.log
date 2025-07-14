@@ -1,0 +1,6 @@
+Mon Jul 14 2025 10:50:56 [SERVER-NAME] info: [32mConfig validation successful.[39m
+Mon Jul 14 2025 10:50:56 [SERVER-NAME] info: [46m🚀 Database connected successfully[49m
+Mon Jul 14 2025 10:50:56 [SERVER-NAME] info: [33m♻️  Socket is listening on same port 5001[39m
+Mon Jul 14 2025 10:50:56 [SERVER-NAME] info: [46m♻️  Application listening on http://10.10.7.109:5001[49m
+Mon Jul 14 2025 10:51:24 [SERVER-NAME] info: 10.10.7.109 - POST /api/v1/users 200 - 1104.474 ms
+Mon Jul 14 2025 10:51:30 [SERVER-NAME] info: Mail send successfully
