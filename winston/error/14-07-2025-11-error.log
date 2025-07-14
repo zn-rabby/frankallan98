@@ -1,2 +1,0 @@
-Mon Jul 14 2025 11:58:29 [SERVER-NAME] error: 10.10.7.109 - POST /api/v1/users 409 - 68.353 ms
-Mon Jul 14 2025 11:59:13 [SERVER-NAME] error: 10.10.7.109 - POST /api/v1/users 400 - 2.354 ms
