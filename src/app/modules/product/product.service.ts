@@ -18,6 +18,12 @@ const createProductToDB = async (payload: IProduct): Promise<IProduct> => {
      return data;
 };
 
+const getAllProductsFromDB = async (): Promise<IProduct[]> => {
+     const result = await Product.find({});
+     return result;
+};
+
 export const ProductService = {
      createProductToDB,
+     getAllProductsFromDB,
 };

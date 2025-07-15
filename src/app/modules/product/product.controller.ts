@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import catchAsync from '../../../shared/catchAsync';
 import { ProductService } from './product.service';
 import sendResponse from '../../../shared/sendResponse';
+import { StatusCodes } from 'http-status-codes';
 
 const createProduct = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
      const { id }: any = req.user;
@@ -19,6 +20,18 @@ const createProduct = catchAsync(async (req: Request, res: Response, next: NextF
      });
 });
 
+const getAllProduct = catchAsync(async (req: Request, res: Response) => {
+     const result = await ProductService.getAllProductsFromDB();
+
+     sendResponse(res, {
+          statusCode: StatusCodes.OK,
+          success: true,
+          message: 'Product retrieved successfully',
+          data: result,
+     });
+});
+
 export const ProductController = {
      createProduct,
+     getAllProduct,
 };
