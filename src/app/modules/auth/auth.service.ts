@@ -5,7 +5,7 @@ import config from '../../../config';
 import { emailHelper } from '../../../helpers/emailHelper';
 import { jwtHelper } from '../../../helpers/jwtHelper';
 import { emailTemplate } from '../../../shared/emailTemplate';
-import { IAuthResetPassword, IChangePassword, ILoginData, IVerifyEmail } from '../../../types/auth';
+import { IAuthResetPassword, IChangePassword, ILoginData, IVerifyPhone } from '../../../types/auth';
 import { ResetToken } from '../resetToken/resetToken.model';
 import { User } from '../user/user.model';
 import AppError from '../../../errors/AppError';
@@ -13,92 +13,151 @@ import generateOTP from '../../../utils/generateOTP';
 import cryptoToken from '../../../utils/cryptoToken';
 import { verifyToken } from '../../../utils/verifyToken';
 import { createToken } from '../../../utils/createToken';
+import { twilioService } from '../../builder/TwilioService';
 
 //login
-const loginUserFromDB = async (payload: ILoginData) => {
-     const { email, password } = payload;
-     
-     const isExistUser = await User.findOne({ email }).select('+password');
-     if (!isExistUser) {
-          throw new AppError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
-     }
-
-     // Handle OAuth users (they don't have passwords)
-     if (isExistUser.oauthProvider) {
-          throw new AppError(StatusCodes.BAD_REQUEST, `This account was created using ${isExistUser.oauthProvider}. Please use the ${isExistUser.oauthProvider} login option.`);
-     }
+const login = async (payload: ILoginData) => {
+     const { emailOrPhone, password } = payload;
 
      if (!password) {
           throw new AppError(StatusCodes.BAD_REQUEST, 'Password is required!');
      }
 
-     //check verified and status
-     if (!isExistUser.verified) {
-          //send mail
-          const otp = generateOTP(6);
-          const value = { otp, email: isExistUser.email };
-          const forgetPassword = emailTemplate.resetPassword(value);
-          emailHelper.sendEmail(forgetPassword);
+     // Detect if input is email or phone number
+     const query = emailOrPhone.includes('@') ? { email: emailOrPhone } : { contactNumber: emailOrPhone };
 
-          //save to DB
-          const authentication = { oneTimeCode: otp, expireAt: new Date(Date.now() + 3 * 60000) };
-          await User.findOneAndUpdate({ email }, { $set: { authentication } });
+     const isExistUser = await User.findOne(query).select('+password');
 
-          throw new AppError(StatusCodes.CONFLICT, 'Please verify your account, then try to login again');
-     }
-
-     //check user status
-     if (isExistUser?.status === 'blocked') {
-          throw new AppError(StatusCodes.BAD_REQUEST, 'You do not have permission to access this content. It looks like your account has been blocked.');
-     }
-
-     //check match password
-     if (!(await User.isMatchPassword(password, isExistUser.password || ''))) {
-          throw new AppError(StatusCodes.BAD_REQUEST, 'Password is incorrect!');
-     }
-
-     const jwtData = { id: isExistUser._id, role: isExistUser.role, email: isExistUser.email };
-     //create token
-     const accessToken = jwtHelper.createToken(jwtData, config.jwt.jwt_secret as Secret, config.jwt.jwt_expire_in as string);
-     const refreshToken = jwtHelper.createToken(jwtData, config.jwt.jwt_refresh_secret as string, config.jwt.jwt_refresh_expire_in as string);
-
-     return { accessToken, refreshToken };
-};
-
-//forget password
-const forgetPasswordToDB = async (email: string) => {
-     const isExistUser = await User.isExistUserByEmail(email);
      if (!isExistUser) {
           throw new AppError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
      }
 
-     //send mail
-     const otp = generateOTP(4);
-     const value = { otp, email: isExistUser.email };
-     const forgetPassword = emailTemplate.resetPassword(value);
-     emailHelper.sendEmail(forgetPassword);
+     // ✅ [Removed] No verification check — skip OTP sending
 
-     //save to DB
-     const authentication = { oneTimeCode: otp, expireAt: new Date(Date.now() + 3 * 60000) };
-     await User.findOneAndUpdate({ email }, { $set: { authentication } });
+     // ❌ Blocked users can't login
+     if (isExistUser?.status === 'blocked') {
+          throw new AppError(StatusCodes.BAD_REQUEST, "You don't have permission to access this content. It looks like your account has been blocked.");
+     }
+
+     // ✅ Check match password
+     const isPasswordCorrect = await User.isMatchPassword(password, isExistUser.password);
+
+     if (!isPasswordCorrect) {
+          throw new AppError(StatusCodes.BAD_REQUEST, 'Password is incorrect!');
+     }
+
+     // ✅ Prepare JWT payload
+     const jwtData = {
+          id: isExistUser._id,
+          role: isExistUser.role,
+          email: isExistUser.email,
+          contactNumber: isExistUser.contactNumber,
+     };
+
+     // 🔐 Create access + refresh tokens
+     const accessToken = jwtHelper.createToken(jwtData, config.jwt.jwt_secret as Secret, config.jwt.jwt_expire_in as string);
+
+     const refreshToken = jwtHelper.createToken(jwtData, config.jwt.jwt_refresh_secret as string, config.jwt.jwt_refresh_expire_in as string);
+
+     return {
+          accessToken,
+          refreshToken,
+          id: isExistUser._id,
+          userName: isExistUser.name,
+          image: isExistUser.image,
+     };
 };
-// resend otp
-const resendOtpFromDb = async (email: string) => {
-     // Check if the user exists
-     const isExistUser = await User.isExistUserByEmail(email);
-     if (!isExistUser || !isExistUser._id) {
+
+//forget password
+const forgetPasswordToDB = async (emailOrPhone: string) => {
+     const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailOrPhone);
+     // Check if the user exists based on the input type
+     let isExistUser;
+     if (isEmail) {
+          isExistUser = await User.isExistUserByEmail(emailOrPhone);
+     } else {
+          isExistUser = await User.isExistUserByPhone(emailOrPhone);
+     }
+
+     if (!isExistUser) {
           throw new AppError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
      }
 
-     // send email
+     // Generate OTP
      const otp = generateOTP(4);
-     const values = { name: isExistUser.name, otp: otp, email: isExistUser.email! };
-     const createAccountTemplate = emailTemplate.createAccount(values);
-     emailHelper.sendEmail(createAccountTemplate);
+     // Determine and execute the appropriate OTP delivery method
+     if (isEmail && isExistUser?.email) {
+          // Send OTP via email
+          const value = {
+               otp,
+               email: isExistUser.email,
+          };
+          const forgetPassword = emailTemplate.resetPassword(value);
+          await emailHelper.sendEmail(forgetPassword);
+     } else if (isExistUser?.contactNumber) {
+          // Send OTP via Twilio SMS
+          await twilioService.sendOTP(isExistUser?.contactNumber, otp);
+     } else {
+          throw new AppError(StatusCodes.BAD_REQUEST, 'No valid contact method found for this user');
+     }
 
-     //save to DB
-     const authentication = { oneTimeCode: otp, expireAt: new Date(Date.now() + 3 * 60000) };
-     await User.findOneAndUpdate({ _id: isExistUser._id }, { $set: { authentication } });
+     // Save OTP to DB - use the appropriate field for the query
+     const queryField = isEmail ? { email: emailOrPhone } : { conatctNumber: emailOrPhone };
+     const authentication = {
+          oneTimeCode: otp,
+          expireAt: new Date(Date.now() + 3 * 60000),
+     };
+
+     await User.findOneAndUpdate(queryField, { $set: { authentication } });
+
+     return;
+};
+// resend Otp
+const resendOtpFromDb = async (emailOrPhone: string) => {
+     // Determine if input is email or phone
+     const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailOrPhone);
+
+     // Check if the user exists based on the input type
+     let isExistUser;
+     if (isEmail) {
+          isExistUser = await User.isExistUserByEmail(emailOrPhone);
+     } else {
+          isExistUser = await User.isExistUserByPhone(emailOrPhone);
+     }
+
+     if (!isExistUser || !isExistUser?._id) {
+          throw new AppError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
+     }
+
+     // Generate OTP
+     const otp = generateOTP(4);
+
+     // Determine and execute the appropriate OTP delivery method
+     if (isEmail && isExistUser?.email) {
+          // Send OTP via email
+          const values = {
+               name: isExistUser.name,
+               otp: otp,
+               email: isExistUser.email,
+          };
+          const createAccountTemplate = emailTemplate.createAccount(values);
+          await emailHelper.sendEmail(createAccountTemplate);
+     } else if (isExistUser?.contactNumber) {
+          // Send OTP via Twilio SMS
+          await twilioService.sendOTP(isExistUser?.contactNumber, otp);
+     } else {
+          throw new AppError(StatusCodes.BAD_REQUEST, 'No valid contact method found for this user');
+     }
+
+     // Save OTP to DB
+     const authentication = {
+          oneTimeCode: otp,
+          expireAt: new Date(Date.now() + 3 * 60000),
+     };
+
+     await User.findOneAndUpdate({ _id: isExistUser?._id }, { $set: { authentication } });
+
+     return;
 };
 //forget password by email url
 const forgetPasswordByUrlToDB = async (email: string) => {
@@ -114,27 +173,37 @@ const forgetPasswordByUrlToDB = async (email: string) => {
      }
 
      // Generate JWT token for password reset valid for 10 minutes
-     const jwtPayload = { id: isExistUser._id, email: isExistUser.email, role: isExistUser.role };
+     const jwtPayload = {
+          id: isExistUser._id,
+          email: isExistUser.email,
+          role: isExistUser.role,
+     };
      const resetToken = createToken(jwtPayload, config.jwt.jwt_secret as string, config.reset_pass_expire_time as string);
 
      // Construct password reset URL
-     const resetUrl = `${config.frontend_url}/auth/login/set_password?email=${isExistUser.email}&token=${resetToken}`;
+     const resetUrl = `${config.reset_pass_ui_link}/auth/login/set_password?email=${isExistUser.email}&token=${resetToken}`;
 
      // Prepare email template
-     const forgetPasswordEmail = emailTemplate.resetPasswordByUrl({ email: isExistUser.email, resetUrl });
+     const forgetPasswordEmail = emailTemplate.resetPasswordByUrl({
+          email: isExistUser.email,
+          resetUrl,
+     });
 
      // Send reset email
      await emailHelper.sendEmail(forgetPasswordEmail);
 };
 
 //verify email
-const verifyEmailToDB = async (payload: IVerifyEmail) => {
-     const { email, oneTimeCode } = payload;
-     const isExistUser = await User.findOne({ email }).select('+authentication');
+const verifyPhoneToDB = async (payload: IVerifyPhone) => {
+     const { emailOrPhone, oneTimeCode } = payload;
+
+     // Determine if input is email or phone
+     const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailOrPhone);
+     const query = isEmail ? { email: emailOrPhone } : { contactNumber: emailOrPhone };
+     const isExistUser = await User.findOne(query).select('+authentication');
      if (!isExistUser) {
           throw new AppError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
      }
-
      if (!oneTimeCode) {
           throw new AppError(StatusCodes.BAD_REQUEST, 'Please give the otp, check your email we send a code');
      }
@@ -144,7 +213,7 @@ const verifyEmailToDB = async (payload: IVerifyEmail) => {
      }
 
      const date = new Date();
-     if (date > isExistUser.authentication?.expireAt) {
+     if (!isExistUser?.authentication?.expireAt || date > isExistUser.authentication.expireAt) {
           throw new AppError(StatusCodes.BAD_REQUEST, 'Otp already expired, Please try again');
      }
 
@@ -159,11 +228,24 @@ const verifyEmailToDB = async (payload: IVerifyEmail) => {
           message = 'Email verify successfully';
           user = await User.findById(isExistUser._id);
      } else {
-          await User.findOneAndUpdate({ _id: isExistUser._id }, { authentication: { isResetPassword: true, oneTimeCode: null, expireAt: null } });
+          await User.findOneAndUpdate(
+               { _id: isExistUser._id },
+               {
+                    authentication: {
+                         isResetPassword: true,
+                         oneTimeCode: null,
+                         expireAt: null,
+                    },
+               },
+          );
 
           //create token ;
           const createToken = cryptoToken();
-          await ResetToken.create({ user: isExistUser._id, token: createToken, expireAt: new Date(Date.now() + 5 * 60000) });
+          await ResetToken.create({
+               user: isExistUser._id,
+               token: createToken,
+               expireAt: new Date(Date.now() + 5 * 60000),
+          });
           message = 'Verification Successful: Please securely store and utilize this code for reset password';
           verifyToken = createToken;
      }
@@ -198,9 +280,16 @@ const resetPasswordToDB = async (token: string, payload: IAuthResetPassword) => 
 
      const hashPassword = await bcrypt.hash(newPassword, Number(config.bcrypt_salt_rounds));
 
-     const updateData = { password: hashPassword, authentication: { isResetPassword: false } };
+     const updateData = {
+          password: hashPassword,
+          authentication: {
+               isResetPassword: false,
+          },
+     };
 
-     await User.findOneAndUpdate({ _id: isExistToken.user }, updateData, { new: true });
+     await User.findOneAndUpdate({ _id: isExistToken.user }, updateData, {
+          new: true,
+     });
 };
 // reset password by url
 const resetPasswordByUrl = async (token: string, payload: IAuthResetPassword) => {
@@ -227,10 +316,19 @@ const resetPasswordByUrl = async (token: string, payload: IAuthResetPassword) =>
      const hashPassword = await bcrypt.hash(newPassword, Number(config.bcrypt_salt_rounds));
 
      // Update Password
-     await User.findByIdAndUpdate(id, { password: hashPassword, authentication: { isResetPassword: false } }, { new: true, runValidators: true });
+     await User.findByIdAndUpdate(
+          id,
+          {
+               password: hashPassword,
+               authentication: { isResetPassword: false },
+          },
+          { new: true, runValidators: true },
+     );
 
      // Return Success Response
-     return { message: 'Password reset successful. You can now log in with your new password.' };
+     return {
+          message: 'Password reset successful. You can now log in with your new password.',
+     };
 };
 
 const changePasswordToDB = async (user: JwtPayload, payload: IChangePassword) => {
@@ -241,7 +339,7 @@ const changePasswordToDB = async (user: JwtPayload, payload: IChangePassword) =>
      }
 
      //current password match
-     if (currentPassword && !(await User.isMatchPassword(currentPassword, isExistUser.password || ''))) {
+     if (currentPassword && !(await User.isMatchPassword(currentPassword, isExistUser.password))) {
           throw new AppError(StatusCodes.BAD_REQUEST, 'Password is incorrect');
      }
 
@@ -257,8 +355,12 @@ const changePasswordToDB = async (user: JwtPayload, payload: IChangePassword) =>
      //hash password
      const hashPassword = await bcrypt.hash(newPassword, Number(config.bcrypt_salt_rounds));
 
-     const updateData = { password: hashPassword };
-     const result = await User.findOneAndUpdate({ _id: user.id }, updateData, { new: true });
+     const updateData = {
+          password: hashPassword,
+     };
+     const result = await User.findOneAndUpdate({ _id: user.id }, updateData, {
+          new: true,
+     });
      return result;
 };
 // Refresh token
@@ -286,10 +388,26 @@ const refreshToken = async (token: string) => {
           throw new AppError(StatusCodes.FORBIDDEN, 'User account is deleted');
      }
 
-     const jwtPayload = { id: activeUser?._id?.toString() as string, role: activeUser?.role, email: activeUser.email };
+     const jwtPayload = {
+          id: activeUser?._id?.toString() as string,
+          role: activeUser?.role,
+          email: activeUser.email,
+     };
 
      const accessToken = jwtHelper.createToken(jwtPayload, config.jwt.jwt_secret as Secret, config.jwt.jwt_expire_in as string);
 
-     return { accessToken };
+     return {
+          accessToken,
+     };
 };
-export const AuthService = { verifyEmailToDB, loginUserFromDB, forgetPasswordToDB, resetPasswordToDB, changePasswordToDB, forgetPasswordByUrlToDB, resetPasswordByUrl, resendOtpFromDb, refreshToken };
+export const AuthService = {
+     verifyPhoneToDB,
+     login,
+     forgetPasswordToDB,
+     resetPasswordToDB,
+     changePasswordToDB,
+     forgetPasswordByUrlToDB,
+     resetPasswordByUrl,
+     resendOtpFromDb,
+     refreshToken,
+};

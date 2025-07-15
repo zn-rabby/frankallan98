@@ -1,0 +1,6 @@
+Tue Jul 15 2025 15:48:43 [SERVER-NAME] error: 10.10.7.109 - POST /api/v1/users 400 - 592.686 ms
+Tue Jul 15 2025 15:49:9 [SERVER-NAME] error: 10.10.7.109 - POST /api/v1/users 400 - 161.718 ms
+Tue Jul 15 2025 15:49:11 [SERVER-NAME] error: 10.10.7.109 - POST /api/v1/users 400 - 159.255 ms
+Tue Jul 15 2025 15:49:29 [SERVER-NAME] error: 10.10.7.109 - POST /api/v1/users 417 - 1532.670 ms
+Tue Jul 15 2025 15:49:30 [SERVER-NAME] error: 10.10.7.109 - POST /api/v1/users 409 - 85.018 ms
+Tue Jul 15 2025 15:50:18 [SERVER-NAME] error: 10.10.7.109 - POST /api/v1/auth/login 400 - 2.233 ms

@@ -1,3 +1,0 @@
-Sun Jul 13 2025 17:13:13 [SERVER-NAME] info: 10.10.7.109 - GET /api/v1/users/profile 200 - 290.727 ms
-Sun Jul 13 2025 17:45:29 [SERVER-NAME] warn: [33mMongoDB disconnected. Attempting to reconnect...[39m
-Sun Jul 13 2025 17:45:36 [SERVER-NAME] info: [32mMongoDB reconnected successfully[39m
