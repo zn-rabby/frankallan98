@@ -23,7 +23,17 @@ const getAllProductsFromDB = async (): Promise<IProduct[]> => {
      return result;
 };
 
+// Get Single Category by ID
+const getSingleProductFromDB = async (id: string): Promise<IProduct | null> => {
+     const product = await Product.findById(id);
+     if (!product) {
+          throw new AppError(StatusCodes.NOT_FOUND, 'Product not found');
+     }
+     return product;
+};
+
 export const ProductService = {
      createProductToDB,
      getAllProductsFromDB,
+     getSingleProductFromDB,
 };
