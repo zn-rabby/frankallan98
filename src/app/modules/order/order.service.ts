@@ -22,7 +22,17 @@ const getAllOrdersFromDB = async (): Promise<IOrder[]> => {
      return result;
 };
 
+// Get Single Category by ID
+const getSingleOrderFromDB = async (id: string): Promise<IOrder | null> => {
+     const order = await Order.findById(id);
+     if (!order) {
+          throw new AppError(StatusCodes.NOT_FOUND, 'Order not found');
+     }
+     return order;
+};
+
 export const OrderService = {
      createOrderToDB,
      getAllOrdersFromDB,
+     getSingleOrderFromDB,
 };
