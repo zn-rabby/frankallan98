@@ -50,9 +50,18 @@ const updateProductToDB = async (id: string, payload: IProduct) => {
      return updateProduct;
 };
 
+const deleteProductToDB = async (id: string): Promise<IProduct | null> => {
+     const deleteService = await Product.findByIdAndDelete(id);
+     if (!deleteService) {
+          throw new AppError(StatusCodes.BAD_REQUEST, "Product doesn't exist");
+     }
+     return deleteService;
+};
+
 export const ProductService = {
      createProductToDB,
      getAllProductsFromDB,
      getSingleProductFromDB,
      updateProductToDB,
+     deleteProductToDB,
 };

@@ -66,10 +66,22 @@ const updateProduct = catchAsync(async (req: Request, res: Response) => {
           data: result,
      });
 });
+const deleteProduct = catchAsync(async (req: Request, res: Response) => {
+     const id = req.params.id;
+     const result = await ProductService.deleteProductToDB(id);
+
+     sendResponse(res, {
+          success: true,
+          statusCode: StatusCodes.OK,
+          message: 'Product deleted successfully',
+          data: { id }, // ✅ id + name দুইটাই পাঠানো
+     });
+});
 
 export const ProductController = {
      createProduct,
      getAllProduct,
      getSingleProduct,
      updateProduct,
+     deleteProduct,
 };
