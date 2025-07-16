@@ -54,3 +54,8 @@ Wed Jul 16 2025 15:45:46 [SERVER-NAME] info: [46m🚀 Database connected succes
 Wed Jul 16 2025 15:45:46 [SERVER-NAME] info: [33m♻️  Socket is listening on same port 5001[39m
 Wed Jul 16 2025 15:45:46 [SERVER-NAME] info: [46m♻️  Application listening on http://10.10.7.109:5001[49m
 Wed Jul 16 2025 15:46:54 [SERVER-NAME] info: 10.10.7.109 - GET /api/v1/tanzania/districts 200 - 0.984 ms
+Wed Jul 16 2025 15:48:4 [SERVER-NAME] info: 10.10.7.109 - GET /api/v1/tanzania/districts 200 - 0.555 ms
+Wed Jul 16 2025 15:48:44 [SERVER-NAME] info: 10.10.7.109 - GET /api/v1/tanzania/districts/Kigamboni/wards 200 - 0.763 ms
+Wed Jul 16 2025 15:49:36 [SERVER-NAME] info: 10.10.7.109 - GET /api/v1/tanzania/districts/Kigamboni/wards 200 - 0.646 ms
+Wed Jul 16 2025 15:49:52 [SERVER-NAME] info: 10.10.7.109 - GET /api/v1/tanzania/districts/Kigamboni/wards 200 - 0.769 ms
+Wed Jul 16 2025 15:50:30 [SERVER-NAME] info: 10.10.7.109 - GET /api/v1/tanzania/districts/Kigamboni/wards/Kigamboni%20Ward/sub-wards 200 - 0.847 ms
