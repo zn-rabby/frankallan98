@@ -24,7 +24,7 @@ export type IOrder = {
      itemDetails: string;
      pickupTime: Date;
      serviceType: Types.ObjectId;
-     images: string;
+     image: string;
      productWeight: number;
      quantity: number;
      deliveryAddress: IDeliveryAddress;

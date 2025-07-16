@@ -32,7 +32,7 @@ const OrderSchema = new Schema<IOrder>(
           itemDetails: { type: String, required: true },
           pickupTime: { type: Date, required: true },
           serviceType: { type: Schema.Types.ObjectId, ref: 'ServiceType', required: true },
-          images: { type: String }, // or Schema.Types.ObjectId if referencing another model
+          image: { type: String }, // or Schema.Types.ObjectId if referencing another model
           productWeight: { type: Number, required: true },
           quantity: { type: Number, required: true },
           deliveryAddress: { type: DeliveryAddressSchema, required: true },

@@ -3,6 +3,7 @@ import { UserRouter } from '../app/modules/user/user.route';
 import { AuthRouter } from '../app/modules/auth/auth.route';
 import { ProductRoutes } from '../app/modules/product/product.route';
 import { TanzaniaRoutes } from '../app/modules/tanzania/tanzania.route';
+import { OrderRoutes } from '../app/modules/order/order.route';
 
 const router = express.Router();
 const routes = [
@@ -21,6 +22,10 @@ const routes = [
      {
           path: '/tanzania',
           route: TanzaniaRoutes,
+     },
+     {
+          path: '/orders',
+          route: OrderRoutes,
      },
 ];
 

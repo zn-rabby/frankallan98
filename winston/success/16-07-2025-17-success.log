@@ -1,0 +1,15 @@
+Wed Jul 16 2025 17:51:55 [SERVER-NAME] info: [32mConfig validation successful.[39m
+Wed Jul 16 2025 17:51:56 [SERVER-NAME] info: [46m🚀 Database connected successfully[49m
+Wed Jul 16 2025 17:51:56 [SERVER-NAME] info: [33m♻️  Socket is listening on same port 5001[39m
+Wed Jul 16 2025 17:51:56 [SERVER-NAME] info: [46m♻️  Application listening on http://10.10.7.109:5001[49m
+Wed Jul 16 2025 17:52:33 [SERVER-NAME] info: 10.10.7.109 - POST /api/v1/orders 200 - 194.177 ms
+Wed Jul 16 2025 17:53:48 [SERVER-NAME] info: [32mConfig validation successful.[39m
+Wed Jul 16 2025 17:53:49 [SERVER-NAME] info: [32mConfig validation successful.[39m
+Wed Jul 16 2025 17:53:52 [SERVER-NAME] info: [46m🚀 Database connected successfully[49m
+Wed Jul 16 2025 17:53:52 [SERVER-NAME] info: [33m♻️  Socket is listening on same port 5001[39m
+Wed Jul 16 2025 17:53:52 [SERVER-NAME] info: [46m♻️  Application listening on http://10.10.7.109:5001[49m
+Wed Jul 16 2025 17:54:0 [SERVER-NAME] info: [32mConfig validation successful.[39m
+Wed Jul 16 2025 17:54:2 [SERVER-NAME] info: [46m🚀 Database connected successfully[49m
+Wed Jul 16 2025 17:54:2 [SERVER-NAME] info: [33m♻️  Socket is listening on same port 5001[39m
+Wed Jul 16 2025 17:54:2 [SERVER-NAME] info: [46m♻️  Application listening on http://10.10.7.109:5001[49m
+Wed Jul 16 2025 17:54:3 [SERVER-NAME] info: 10.10.7.109 - POST /api/v1/orders 200 - 348.132 ms
