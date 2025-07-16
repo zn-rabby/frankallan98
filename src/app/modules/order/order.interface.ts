@@ -24,10 +24,10 @@ export type IOrder = {
      itemDetails: string;
      pickupTime: Date;
      serviceType: Types.ObjectId;
-     images: Types.ObjectId;
+     images: string;
      productWeight: number;
      quantity: number;
-     deliveryAddress: string;
+     deliveryAddress: IDeliveryAddress;
 };
 
 export type ProductModel = Model<IOrder, Record<string, unknown>>;
