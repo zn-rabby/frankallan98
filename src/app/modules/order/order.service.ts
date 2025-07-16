@@ -17,6 +17,12 @@ const createOrderToDB = async (payload: IOrder): Promise<IOrder> => {
      return data;
 };
 
+const getAllOrdersFromDB = async (): Promise<IOrder[]> => {
+     const result = await Order.find({});
+     return result;
+};
+
 export const OrderService = {
      createOrderToDB,
+     getAllOrdersFromDB,
 };
