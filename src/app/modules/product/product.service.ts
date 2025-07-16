@@ -11,7 +11,7 @@ const createProductToDB = async (payload: IProduct): Promise<IProduct> => {
 
      if (!data) {
           unlinkFile(image);
-          throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to create Service');
+          throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to create Product');
      }
 
      if (!data) throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to created Product ');
@@ -32,8 +32,27 @@ const getSingleProductFromDB = async (id: string): Promise<IProduct | null> => {
      return product;
 };
 
+const updateProductToDB = async (id: string, payload: IProduct) => {
+     const isExistProduct: any = await Product.findById(id);
+
+     if (!isExistProduct) {
+          throw new AppError(StatusCodes.BAD_REQUEST, "Product doesn't exist");
+     }
+
+     if (payload.image) {
+          unlinkFile(isExistProduct?.image);
+     }
+
+     const updateProduct = await Product.findOneAndUpdate({ _id: id }, payload, {
+          new: true,
+     });
+
+     return updateProduct;
+};
+
 export const ProductService = {
      createProductToDB,
      getAllProductsFromDB,
      getSingleProductFromDB,
+     updateProductToDB,
 };

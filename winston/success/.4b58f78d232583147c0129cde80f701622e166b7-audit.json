@@ -1,0 +1,20 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 1
+    },
+    "auditLog": "C:\\Users\\Zulkar Naeem Rabby\\OneDrive\\Desktop\\rabby\\frankallan98\\winston\\success\\.4b58f78d232583147c0129cde80f701622e166b7-audit.json",
+    "files": [
+        {
+            "date": 1752635275347,
+            "name": "C:\\Users\\Zulkar Naeem Rabby\\OneDrive\\Desktop\\rabby\\frankallan98\\winston\\success\\16-07-2025-09-success.log",
+            "hash": "33dbc83e123537065f96c09b2a13c2594b2c30c7eb6391b0f7da1f0395730191"
+        },
+        {
+            "date": 1752644725455,
+            "name": "C:\\Users\\Zulkar Naeem Rabby\\OneDrive\\Desktop\\rabby\\frankallan98\\winston\\success\\16-07-2025-11-success.log",
+            "hash": "9c60e3df29c2a265b6b294145133339227d25cea29f2d0f9217124a38eb62045"
+        }
+    ],
+    "hashType": "sha256"
+}

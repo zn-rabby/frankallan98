@@ -9,5 +9,6 @@ const router = express.Router();
 router.post('/', fileUploadHandler(), parseFileData('image'), auth(USER_ROLES.USER, USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.VENDOR), ProductController.createProduct);
 router.get('/', auth(USER_ROLES.USER, USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.VENDOR), ProductController.getAllProduct);
 router.get('/:id', auth(USER_ROLES.USER, USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.VENDOR), ProductController.getSingleProduct);
+router.patch('/:id', fileUploadHandler(), parseFileData('image'), auth(USER_ROLES.USER, USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.VENDOR), ProductController.updateProduct);
 
 export const ProductRoutes = router;

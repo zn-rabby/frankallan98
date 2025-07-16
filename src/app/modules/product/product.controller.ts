@@ -49,8 +49,27 @@ const getSingleProduct = catchAsync(async (req: Request, res: Response) => {
      });
 });
 
+const updateProduct = catchAsync(async (req: Request, res: Response) => {
+     const { id } = req.params;
+     const updateData = req.body;
+
+     const result = await ProductService.updateProductToDB(id, updateData);
+
+     if (!result) {
+          throw new AppError(StatusCodes.NOT_FOUND, 'Failed to update product');
+     }
+
+     sendResponse(res, {
+          statusCode: StatusCodes.OK,
+          success: true,
+          message: 'Product updated successfully',
+          data: result,
+     });
+});
+
 export const ProductController = {
      createProduct,
      getAllProduct,
      getSingleProduct,
+     updateProduct,
 };
