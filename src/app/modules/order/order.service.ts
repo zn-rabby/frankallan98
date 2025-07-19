@@ -49,9 +49,18 @@ const updateOrderToDB = async (id: string, payload: IOrder) => {
      return updateProduct;
 };
 
+const deleteOrderToDB = async (id: string): Promise<IOrder | null> => {
+     const deleteService = await Order.findByIdAndDelete(id);
+     if (!deleteService) {
+          throw new AppError(StatusCodes.BAD_REQUEST, "Product doesn't exist");
+     }
+     return deleteService;
+};
+
 export const OrderService = {
      createOrderToDB,
      getAllOrdersFromDB,
      getSingleOrderFromDB,
      updateOrderToDB,
+     deleteOrderToDB,
 };

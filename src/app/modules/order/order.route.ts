@@ -10,5 +10,6 @@ router.post('/', fileUploadHandler(), parseFileData('image'), auth(USER_ROLES.US
 router.get('/', auth(USER_ROLES.USER, USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.VENDOR), OrderController.getAllOrder);
 router.get('/:id', auth(USER_ROLES.USER, USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.VENDOR), OrderController.getSingleOrder);
 router.patch('/:id', fileUploadHandler(), parseFileData('image'), auth(USER_ROLES.USER, USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.VENDOR), OrderController.updateOrder);
+router.delete('/:id', auth(USER_ROLES.USER, USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.VENDOR), OrderController.deleteOrder);
 
 export const OrderRoutes = router;
