@@ -1,4 +1,0 @@
-Wed Jul 16 2025 12:9:41 [SERVER-NAME] error: 10.10.7.109 - POST /api/v1/products 400 - 100.427 ms
-Wed Jul 16 2025 12:11:3 [SERVER-NAME] error: 10.10.7.109 - DELETE /api/v1/products/6877426f56b40c0f9dfe9e62 400 - 168.531 ms
-Wed Jul 16 2025 12:12:41 [SERVER-NAME] error: 10.10.7.109 - DELETE /api/v1/products/6877426f56b40c0f9dfe9e62 400 - 176.027 ms
-Wed Jul 16 2025 12:12:43 [SERVER-NAME] error: 10.10.7.109 - DELETE /api/v1/products/6877426f56b40c0f9dfe9e62 400 - 154.740 ms

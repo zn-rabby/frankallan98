@@ -49,8 +49,27 @@ const getSingleOrder = catchAsync(async (req: Request, res: Response) => {
      });
 });
 
+const updateOrder = catchAsync(async (req: Request, res: Response) => {
+     const { id } = req.params;
+     const updateData = req.body;
+
+     const result = await OrderService.updateOrderToDB(id, updateData);
+
+     if (!result) {
+          throw new AppError(StatusCodes.NOT_FOUND, 'Failed to update order');
+     }
+
+     sendResponse(res, {
+          statusCode: StatusCodes.OK,
+          success: true,
+          message: 'Order updated successfully',
+          data: result,
+     });
+});
+
 export const OrderController = {
      createProduct,
      getAllOrder,
      getSingleOrder,
+     updateOrder,
 };

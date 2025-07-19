@@ -1,6 +1,0 @@
-Wed Jul 16 2025 18:1:47 [SERVER-NAME] info: [32mConfig validation successful.[39m
-Wed Jul 16 2025 18:2:21 [SERVER-NAME] info: [32mConfig validation successful.[39m
-Wed Jul 16 2025 18:2:22 [SERVER-NAME] info: [46m🚀 Database connected successfully[49m
-Wed Jul 16 2025 18:2:22 [SERVER-NAME] info: [33m♻️  Socket is listening on same port 5001[39m
-Wed Jul 16 2025 18:2:22 [SERVER-NAME] info: [46m♻️  Application listening on http://10.10.7.109:5001[49m
-Wed Jul 16 2025 18:12:44 [SERVER-NAME] info: [34mSIGINT received. Shutting down gracefully...[39m

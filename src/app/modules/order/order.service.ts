@@ -31,8 +31,27 @@ const getSingleOrderFromDB = async (id: string): Promise<IOrder | null> => {
      return order;
 };
 
+const updateOrderToDB = async (id: string, payload: IOrder) => {
+     const isExistProduct: any = await Order.findById(id);
+
+     if (!isExistProduct) {
+          throw new AppError(StatusCodes.BAD_REQUEST, "Order doesn't exist");
+     }
+
+     if (payload.image) {
+          unlinkFile(isExistProduct?.image);
+     }
+
+     const updateProduct = await Order.findOneAndUpdate({ _id: id }, payload, {
+          new: true,
+     });
+
+     return updateProduct;
+};
+
 export const OrderService = {
      createOrderToDB,
      getAllOrdersFromDB,
      getSingleOrderFromDB,
+     updateOrderToDB,
 };
